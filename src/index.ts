@@ -18,11 +18,64 @@ const server = new McpServer({
 });
 
 
+server.registerTool(
+    "create_branch", {
+        description: "create a new branch for this issue",
+        inputSchema: {
+            owner: z.string(),
+            repo: z.string(),
+            branch_name: z.string()
+        }
+    },
+    async ({ owner, repo, branch_name }) => {
+        try {
+
+            const repoData = await octokit.repos.get({
+                owner,
+                repo
+            })
+            
+            const master = await octokit.rest.git.getRef({
+                owner,
+                repo,
+                ref: `heads/${repoData.data.default_branch}`
+            })
+
+            const baseSha = master.data.object.sha
+            const response = await octokit.rest.git.createRef({
+                owner,
+                repo,
+                ref: `refs/heads/${branch_name}`,
+                sha: baseSha
+            })
+            return {
+                content: [
+                    {
+                        type: "text",
+                        text: `branch created ${response.data.object.url}`
+                    }
+                ]
+            }
+        } catch (error) {
+            return {
+                content: [
+                    {
+                        type: "text",
+                        text: `error occured ${error}`
+                    }
+                ]
+            }
+        }
+    }
+)
 
 server.registerTool(
     "create_issue",
     {
-        description: "Create a GitHub issue",
+        description: `Create a GitHub issue whatever is the user prompt enchance the
+        issue description and in response only give a message that issue is created with
+        the issue link
+        ` ,
         inputSchema: {
             owner: z.string(),
             repo: z.string(),
@@ -98,4 +151,5 @@ server.registerTool(
 )
 
 server.connect(transport);
+
 
