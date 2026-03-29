@@ -19,11 +19,14 @@
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.28.0",
+    "@octokit/oauth-app": "^8.0.3",
     "@octokit/rest": "^22.0.1",
     "@slack/web-api": "^7.15.0",
+    "express": "^5.1.0",
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/express": "^5.0.6",
     "@types/node": "^25.5.0",
     "typescript": "^6.0.2"
   }
